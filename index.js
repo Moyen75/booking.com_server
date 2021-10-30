@@ -25,18 +25,7 @@ async function run() {
             const result = await cursor.toArray();
             res.json(result)
         })
-        app.get('/services/:id', async (req, res) => {
-            const id = req.params.id;
-            console.log(id)
-            const query = { _id: ObjectId(id) }
-            const result = await offerCollection.findOne(query)
-            res.json(result)
-        })
-        app.post('/service', async (req, res) => {
-            const offer = req.body;
-            // console.log("hit the post api-1")
-            res.send('post hitted.')
-        })
+
     }
     finally {
         // await client.close();
@@ -49,22 +38,26 @@ async function start() {
         await client.connect();
         const database = client.db('storage')
         const storedOffers = database.collection('offers')
-        console.log('storage db connected.')
 
         // store a offer
         app.post('/store', async (req, res) => {
             const offer = req.body;
-            console.log("hit the post api")
-            console.log('stored item', offer)
             const result = await storedOffers.insertOne(offer)
             res.json(result)
         })
-        app.post('/store/:email', async (req, res) => {
-            const email = req.params.email
-            console.log('store/email hitted.', email)
-            const query =  storedOffers.find()
-            console.log('this is query', query)
-            res.send('get email')
+        app.get('/store', async (req, res) => {
+            const cursor = storedOffers.find({})
+            const matched = await cursor.toArray()
+            // console.log('this is query', query)
+            res.json(matched)
+        })
+        app.delete('/store/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            console.log(id)
+            const result = await storedOffers.deleteOne(query)
+            res.send(result)
+            console.log(result)
         })
 
     }
