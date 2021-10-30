@@ -1,9 +1,10 @@
 const express = require('express')
 const app = express()
+const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require('mongodb');
 require('dotenv').config()
 const cors = require('cors')
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 7000;
 
 // user=hotel_booking
 // password=fpPMqSs29RorzT63
@@ -17,13 +18,28 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        console.log('mongodb connected.')
+        const database = client.db('hotelMotel')
+        const offerCollection = database.collection('offers')
+        app.get('/offers', async (req, res) => {
+            const cursor = offerCollection.find({})
+            const result = await cursor.toArray();
+            res.json(result)
+        })
+        app.get('/offers/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id)
+            const query = { _id: ObjectId(id) }
+            const result = await offerCollection.findOne(query)
+            res.json(result)
+        })
     }
     finally {
         // await client.close();
     }
 }
 run().catch(console.dir)
+
+
 
 app.get('/', (req, res) => {
     res.send('server is running.')
