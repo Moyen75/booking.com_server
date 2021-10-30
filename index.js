@@ -32,6 +32,11 @@ async function run() {
             const result = await offerCollection.findOne(query)
             res.json(result)
         })
+        app.post('/service', async (req, res) => {
+            const offer = req.body;
+            // console.log("hit the post api-1")
+            res.send('post hitted.')
+        })
     }
     finally {
         // await client.close();
@@ -39,7 +44,28 @@ async function run() {
 }
 run().catch(console.dir)
 
+async function start() {
+    try {
+        await client.connect();
+        const database = client.db('storage')
+        const storedOffers = database.collection('offers')
+        console.log('storage db connected.')
 
+        // store a offer
+        app.post('/store', async (req, res) => {
+            const offer = req.body;
+            console.log("hit the post api")
+            console.log('stored item', offer)
+            const result = await storedOffers.insertOne(offer)
+            res.json(result)
+        })
+
+    }
+    finally {
+        //   await client.close();
+    }
+}
+start().catch(console.dir)
 
 app.get('/', (req, res) => {
     res.send('server is running.')
