@@ -59,6 +59,13 @@ async function start() {
             const result = await storedOffers.insertOne(offer)
             res.json(result)
         })
+        app.post('/store/:email', async (req, res) => {
+            const email = req.params.email
+            console.log('store/email hitted.', email)
+            const query =  storedOffers.find()
+            console.log('this is query', query)
+            res.send('get email')
+        })
 
     }
     finally {
