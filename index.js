@@ -25,6 +25,12 @@ async function run() {
             const result = await cursor.toArray();
             res.json(result)
         })
+        app.post('/services', async (req, res) => {
+            const offer = req.body;
+            const result = await offerCollection.insertOne(offer)
+            console.log('this will be added into the services.', result)
+            res.send(result)
+        })
 
     }
     finally {
